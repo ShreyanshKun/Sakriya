@@ -8,36 +8,51 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+// import PaymentForm from '@/components/PaymentForm'; // <-- THIS IMPORT IS NOW REMOVED
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity, clearCartItems } = useCart();
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
-  const [paymentData, setPaymentData] = useState<Record<string, unknown> | null>(null);
-  const [error, setError] = useState<string>('');
+  
+  // const [showPayment, setShowPayment] = useState(false); // <-- REMOVED
+  // const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | null>(null); // <-- REMOVED
+  // const [paymentData, setPaymentData] = useState<Record<string, unknown> | null>(null); // <-- REMOVED
+  // const [error, setError] = useState<string>(''); // <-- REMOVED
 
   const tax = cart.total * 0.18; // 18% GST
   const total = cart.total + tax;
 
-  const handlePaymentSuccess = (paymentData: Record<string, unknown>) => {
-    setPaymentStatus('success');
-    setPaymentData(paymentData);
-    setError('');
-    // Clear cart after successful payment
+  // --- ALL PAYMENT HANDLER FUNCTIONS (handlePaymentSuccess, etc.) ARE REMOVED ---
+  // --- A NEW WHATSAPP CHECKOUT HANDLER IS ADDED ---
+
+  const handleWhatsAppCheckout = () => {
+    // 1. SET YOUR WHATSAPP PHONE NUMBER
+    const YOUR_PHONE_NUMBER = "918144218850"; // <-- Change this if needed
+
+    // 2. Create the pre-filled message
+    let message = "Hello, I'd like to place an order for the following items:\n\n";
+    
+    cart.items.forEach(item => {
+      message += `- ${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}\n`;
+    });
+
+    message += `\nSubtotal: ₹${cart.total.toFixed(2)}`;
+    message += `\nTax (18%): ₹${tax.toFixed(2)}`;
+    message += `\n*Total: ₹${total.toFixed(2)}*`;
+    message += `\n\nPlease confirm my order.`;
+
+    // 3. Encode the message for a URL
+    const encodedMessage = encodeURIComponent(message);
+
+    // 4. Create the final WhatsApp URL
+    const whatsappUrl = `https://wa.me/${YOUR_PHONE_NUMBER}?text=${encodedMessage}`;
+
+    // 5. Open the link in a new tab
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
+    // 6. Clear cart after sending to WhatsApp
     clearCartItems();
   };
 
-  const handlePaymentFailure = (error: unknown) => {
-    setPaymentStatus('failed');
-    setError(error instanceof Error ? error.message : 'Payment failed');
-  };
-
-  const resetPayment = () => {
-    setPaymentStatus(null);
-    setPaymentData(null);
-    setError('');
-    setShowPayment(false);
-  };
 
   if (cart.items.length === 0) {
     return (
@@ -46,10 +61,10 @@ export default function CartPage() {
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center space-x-2">
-            <ShoppingCart className="h-8 w-8 text-green-600" />
-            <span className="text-xl font-bold text-gray-900">Sakria Farm and HomeStay</span>
-          </div>
+              <div className="flex items-center space-x-2">
+                <ShoppingCart className="h-8 w-8 text-green-600" />
+                <span className="text-xl font-bold text-gray-900">Sakria Farm and HomeStay</span>
+              </div>
               <div className="hidden md:flex space-x-8">
                 <Link href="/" className="text-gray-700 hover:text-green-600">
                   Home
@@ -240,89 +255,34 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Payment Status */}
-                {paymentStatus && (
-                  <div className={`p-4 rounded-lg ${
-                    paymentStatus === 'success' 
-                      ? 'bg-green-50 border border-green-200' 
-                      : 'bg-red-50 border border-red-200'
-                  }`}>
-                    <div className="flex items-center space-x-2">
-                      {paymentStatus === 'success' ? (
-                        <span className="text-green-600">✓</span>
-                      ) : (
-                        <span className="text-red-600">✗</span>
-                      )}
-                      <span className={`font-semibold ${
-                        paymentStatus === 'success' ? 'text-green-800' : 'text-red-800'
-                      }`}>
-                        {paymentStatus === 'success' ? 'Payment Successful!' : 'Payment Failed'}
-                      </span>
-                    </div>
-                    {paymentStatus === 'success' && paymentData && (
-                      <div className="mt-2 text-sm text-green-700">
-                        <div>Payment ID: {String(paymentData.id || 'N/A')}</div>
-                        <div>Amount: ₹{((Number(paymentData.amount) || 0) / 100).toFixed(2)}</div>
-                        <div>Method: {String(paymentData.method || 'N/A')}</div>
-                      </div>
-                    )}
-                    {paymentStatus === 'failed' && error && (
-                      <div className="mt-2 text-sm text-red-700">
-                        {error}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* --- PAYMENT STATUS BLOCKS ARE REMOVED --- */}
 
-                {/* Action Buttons */}
-                {!showPayment && !paymentStatus && (
-                  <div className="space-y-2">
-                    <Button
-                      onClick={() => setShowPayment(true)}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      Proceed to Checkout
-                    </Button>
-                    <Button
-                      onClick={clearCartItems}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Clear Cart
-                    </Button>
-                  </div>
-                )}
-
-                {paymentStatus && (
-                  <Button 
-                    onClick={resetPayment}
+                {/* --- ACTION BUTTONS ARE UPDATED --- */}
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleWhatsAppCheckout} // <-- CHANGED
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    Checkout via WhatsApp
+                  </Button>
+                  <Button
+                    onClick={clearCartItems}
                     variant="outline"
                     className="w-full"
                   >
-                    Make Another Payment
+                    Clear Cart
                   </Button>
-                )}
+                </div>
+
+                {/* --- PAYMENT STATUS/RESET BUTTONS ARE REMOVED --- */}
+
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Payment Form */}
-        {showPayment && !paymentStatus && (
-          <div className="mt-8">
-            <PaymentForm
-              amount={total}
-              currency="INR"
-              onSuccess={handlePaymentSuccess}
-              onFailure={handlePaymentFailure}
-              userDetails={{
-                name: 'John Doe',
-                email: 'john@example.com',
-                phone: '+91 9876543210',
-              }}
-            />
-          </div>
-        )}
+        {/* --- PAYMENT FORM BLOCK IS REMOVED --- */}
+
       </div>
     </div>
   );
