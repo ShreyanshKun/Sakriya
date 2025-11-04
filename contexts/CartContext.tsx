@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+// Assuming your cart functions are in a similar location
 import { Cart, CartItem, getCart, addToCart, removeFromCart, updateItemQuantity, clearCart } from '@/lib/cart';
 
 interface CartContextType {
@@ -11,12 +12,18 @@ interface CartContextType {
   clearCartItems: () => void;
   isInCart: (itemId: number) => boolean;
   getItemQuantity: (itemId: number) => number;
+  // --- ADD THESE NEW PROPERTIES FOR THE FLYOUT ---
+  isCartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Cart>({ items: [], total: 0, itemCount: 0 });
+  // --- ADD STATE FOR THE FLYOUT VISIBILITY ---
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -51,6 +58,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const item = cart.items.find(item => item.id === itemId);
     return item ? item.quantity : 0;
   };
+  
+  // --- ADD FUNCTIONS TO CONTROL THE FLYOUT ---
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   return (
     <CartContext.Provider
@@ -62,6 +73,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCartItems,
         isInCart,
         getItemQuantity,
+        // --- PROVIDE THE NEW STATE AND FUNCTIONS ---
+        isCartOpen,
+        openCart,
+        closeCart,
       }}
     >
       {children}

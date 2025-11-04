@@ -8,72 +8,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
-import PaymentForm from '@/components/PaymentForm';
+import WhatsappCheckoutModal from '@/components/checkout/WhatsappCheckoutModal';
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity, clearCartItems } = useCart();
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
-  const [paymentData, setPaymentData] = useState<any>(null);
-  const [error, setError] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const tax = cart.total * 0.18; // 18% GST
   const total = cart.total + tax;
 
-  const handlePaymentSuccess = (paymentData: any) => {
-    setPaymentStatus('success');
-    setPaymentData(paymentData);
-    setError('');
-    // Clear cart after successful payment
-    clearCartItems();
-  };
-
-  const handlePaymentFailure = (error: any) => {
-    setPaymentStatus('failed');
-    setError(error.message || 'Payment failed');
-  };
-
-  const resetPayment = () => {
-    setPaymentStatus(null);
-    setPaymentData(null);
-    setError('');
-    setShowPayment(false);
-  };
-
   if (cart.items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center space-x-2">
-            <ShoppingCart className="h-8 w-8 text-green-600" />
-            <span className="text-xl font-bold text-gray-900">Sakria Farm and HomeStay</span>
-          </div>
-              <div className="hidden md:flex space-x-8">
-                <Link href="/" className="text-gray-700 hover:text-green-600">
-                  Home
-                </Link>
-                <Link href="/products" className="text-gray-700 hover:text-green-600">
-                  Products
-                </Link>
-                <Link href="/accommodations" className="text-gray-700 hover:text-green-600">
-                  Stay
-                </Link>
-                <Link href="/about" className="text-gray-700 hover:text-green-600">
-                  About
-                </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-green-600">
-                  Contact
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
+        {/* The <nav> section has been removed from the empty cart view */}
 
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Breadcrumb */}
           <div className="flex items-center space-x-2 mb-8">
             <Link href="/" className="text-green-600 hover:text-green-700 flex items-center">
               <ArrowLeft className="h-4 w-4 mr-1" />
@@ -82,8 +31,6 @@ export default function CartPage() {
             <span className="text-gray-400">/</span>
             <span className="text-gray-900">Cart</span>
           </div>
-
-          {/* Empty Cart */}
           <div className="text-center py-16">
             <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
@@ -99,37 +46,9 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <ShoppingCart className="h-8 w-8 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">Sakria Farm and HomeStay</span>
-            </div>
-            <div className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-green-600">
-                Home
-              </Link>
-              <Link href="/products" className="text-gray-700 hover:text-green-600">
-                Products
-              </Link>
-              <Link href="/accommodations" className="text-gray-700 hover:text-green-600">
-                Stay
-              </Link>
-              <Link href="/about" className="text-gray-700 hover:text-green-600">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-green-600">
-                Contact
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* The <nav> section has been removed from the main cart view */}
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Breadcrumb */}
         <div className="flex items-center space-x-2 mb-8">
           <Link href="/" className="text-green-600 hover:text-green-700 flex items-center">
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -140,7 +59,6 @@ export default function CartPage() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
@@ -161,9 +79,7 @@ export default function CartPage() {
                           <h3 className="font-semibold">{item.name}</h3>
                           <p className="text-sm text-gray-600">{item.description}</p>
                           <div className="flex items-center space-x-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {item.category}
-                            </Badge>
+                            <Badge variant="outline" className="text-xs">{item.category}</Badge>
                             {item.organic && <Badge className="bg-green-600 text-xs">Organic</Badge>}
                           </div>
                         </div>
@@ -174,34 +90,13 @@ export default function CartPage() {
                       </div>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="h-8 w-8 p-0"
-                          >
-                            -
-                          </Button>
-                          <span className="text-sm font-medium w-8 text-center">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="h-8 w-8 p-0"
-                          >
-                            +
-                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => updateQuantity(item.id, item.quantity - 1)} className="h-8 w-8 p-0">-</Button>
+                          <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                          <Button size="sm" variant="outline" onClick={() => updateQuantity(item.id, item.quantity + 1)} className="h-8 w-8 p-0">+</Button>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className="font-semibold">₹{item.price * item.quantity}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => removeItem(item.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
+                          <Button size="sm" variant="outline" onClick={() => removeItem(item.id)} className="text-red-600 hover:text-red-700">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -213,7 +108,6 @@ export default function CartPage() {
             </Card>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
@@ -223,7 +117,6 @@ export default function CartPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Price Breakdown */}
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal:</span>
@@ -241,90 +134,33 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Payment Status */}
-                {paymentStatus && (
-                  <div className={`p-4 rounded-lg ${
-                    paymentStatus === 'success' 
-                      ? 'bg-green-50 border border-green-200' 
-                      : 'bg-red-50 border border-red-200'
-                  }`}>
-                    <div className="flex items-center space-x-2">
-                      {paymentStatus === 'success' ? (
-                        <span className="text-green-600">✓</span>
-                      ) : (
-                        <span className="text-red-600">✗</span>
-                      )}
-                      <span className={`font-semibold ${
-                        paymentStatus === 'success' ? 'text-green-800' : 'text-red-800'
-                      }`}>
-                        {paymentStatus === 'success' ? 'Payment Successful!' : 'Payment Failed'}
-                      </span>
-                    </div>
-                    {paymentStatus === 'success' && paymentData && (
-                      <div className="mt-2 text-sm text-green-700">
-                        <div>Payment ID: {paymentData.id}</div>
-                        <div>Amount: ₹{(paymentData.amount / 100).toFixed(2)}</div>
-                        <div>Method: {paymentData.method}</div>
-                      </div>
-                    )}
-                    {paymentStatus === 'failed' && error && (
-                      <div className="mt-2 text-sm text-red-700">
-                        {error}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                {!showPayment && !paymentStatus && (
-                  <div className="space-y-2">
-                    <Button
-                      onClick={() => setShowPayment(true)}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      Proceed to Checkout
-                    </Button>
-                    <Button
-                      onClick={clearCartItems}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Clear Cart
-                    </Button>
-                  </div>
-                )}
-
-                {paymentStatus && (
-                  <Button 
-                    onClick={resetPayment}
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    Proceed to Checkout
+                  </Button>
+                  <Button
+                    onClick={clearCartItems}
                     variant="outline"
                     className="w-full"
                   >
-                    Make Another Payment
+                    Clear Cart
                   </Button>
-                )}
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
-
-        {/* Payment Form */}
-        {showPayment && !paymentStatus && (
-          <div className="mt-8">
-            <PaymentForm
-              amount={total}
-              currency="INR"
-              onSuccess={handlePaymentSuccess}
-              onFailure={handlePaymentFailure}
-              userDetails={{
-                name: 'John Doe',
-                email: 'john@example.com',
-                phone: '+91 9876543210',
-              }}
-            />
-          </div>
-        )}
       </div>
+
+      <WhatsappCheckoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        cartItems={cart.items}
+        totalAmount={total}
+      />
     </div>
   );
 }

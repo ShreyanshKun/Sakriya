@@ -76,15 +76,15 @@ export interface PaymentVerificationParams {
 }
 
 // Generate client-side options for Razorpay
-export function getRazorpayOptions(order: any, userDetails?: any) {
+export function getRazorpayOptions(order: Record<string, unknown>, userDetails?: Record<string, unknown>) {
   return {
     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-    amount: order.amount,
-    currency: order.currency,
+    amount: order.amount as number,
+    currency: order.currency as string,
     name: 'Sakria Farm and HomeStay',
     description: 'Farm Products & Accommodation',
     image: '/images/garden.jpg',
-    order_id: order.id,
+    order_id: order.id as string,
     prefill: {
       name: userDetails?.name || '',
       email: userDetails?.email || '',
@@ -101,7 +101,7 @@ export function getRazorpayOptions(order: any, userDetails?: any) {
         console.log('Payment modal closed');
       },
     },
-    handler: function(response: any) {
+    handler: function(response: unknown) {
       console.log('Payment successful:', response);
       // Handle successful payment
     },

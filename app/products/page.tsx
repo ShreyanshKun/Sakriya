@@ -1,119 +1,60 @@
 'use client';
 
 import Image from "next/image"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Leaf, ArrowLeft, ShoppingCart, Plus, Minus } from "lucide-react"
+import { Leaf, ArrowLeft, Plus, Minus } from "lucide-react"
 import { useCart } from "@/contexts/CartContext"
 
 export default function ProductsPage() {
-  const { cart, addItem, removeItem, updateQuantity, isInCart, getItemQuantity } = useCart();
+  const { cart, addItem, updateQuantity, isInCart, getItemQuantity } = useCart();
   
-  const products = [
-    {
-      id: 1,
-      name: "Organic Honey",
-      price: "₹2,074",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Pure wildflower honey from our beehives",
-      category: "Pantry",
-      inStock: true,
-      organic: true,
-    },
-    {
-      id: 2,
-      name: "Fresh Herbs Bundle",
-      price: "₹1,078",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Basil, rosemary, thyme, and oregano",
-      category: "Fresh Produce",
-      inStock: true,
-      organic: true,
-    },
-    {
-      id: 3,
-      name: "Seasonal Vegetables",
-      price: "₹1,576",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Farm-fresh seasonal produce basket",
-      category: "Fresh Produce",
-      inStock: true,
-      organic: true,
-    },
-    {
-      id: 4,
-      name: "Artisan Goat Cheese",
-      price: "₹1,410",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Creamy goat cheese made from our happy goats",
-      category: "Dairy",
-      inStock: true,
-      organic: true,
-    },
-    {
-      id: 5,
-      name: "Free-Range Eggs",
-      price: "₹746",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Fresh eggs from our pasture-raised chickens",
-      category: "Dairy",
-      inStock: true,
-      organic: true,
-    },
-    {
-      id: 6,
-      name: "Lavender Essential Oil",
-      price: "₹2,738",
-      image: "/placeholder.svg?height=250&width=250",
-      description: "Pure lavender oil distilled from our fields",
-      category: "Wellness",
-      inStock: false,
-      organic: true,
-    },
-  ]
+  const products = useMemo(() => [
+    // Squash
+    { id: 1, name: "Ripe Mango – 500 ml", price: "₹80", image: "/images/products/garlic-pickle.jpg", description: "Refreshing ripe mango squash", category: "Squash", inStock: true, organic: true },
+    { id: 2, name: "Raw Mango – 500 ml", price: "₹80", image: "/images/products/lemon-squash.jpg", description: "Tangy raw mango squash", category: "Squash", inStock: true, organic: true },
+    { id: 3, name: "Raw Mango (Cumin) – 500 ml", price: "₹80", image: "/images/products/lemon-squash.jpg", description: "Raw mango squash with cumin", category: "Squash", inStock: true, organic: true },
+    { id: 4, name: "Roasted Mango – 500 ml", price: "₹85", image: "/images/products/garlic-pickle.jpg", description: "Smoky roasted mango squash", category: "Squash", inStock: true, organic: true },
+    { id: 5, name: "Lemon – 500 ml", price: "₹90", image: "/images/products/mango-oil-pickle.jpg", description: "Classic lemon squash", category: "Squash", inStock: true, organic: true },
+    { id: 6, name: "Lime Cordial – 500 ml", price: "₹150", image: "/images/products/lime-cordial.jpg", description: "Sweet and tangy lime cordial", category: "Squash", inStock: true, organic: true },
 
-  const categories = ["All", "Fresh Produce", "Dairy", "Pantry", "Wellness"]
+    // Pickles
+    { id: 7, name: "Garlic – 250 g", price: "₹70", image: "/images/products/garlic-pickle.jpg", description: "Garlic pickle", category: "Pickles", inStock: true, organic: true },
+    { id: 8, name: "Mango Oil (Aam Tel) – 250 g", price: "₹60", image: "/images/products/mango-oil-pickle.jpg", description: "Traditional aam tel pickle", category: "Pickles", inStock: true, organic: true },
+    { id: 9, name: "Jaggery Mango – 250 g", price: "₹60", image: "/images/products/jaggery-mango-pickle.jpg", description: "Sweet jaggery mango pickle", category: "Pickles", inStock: true, organic: true },
+    { id: 10, name: "Olive – 250 g", price: "₹60", image: "/images/products/mixed-pickle.jpg", description: "Olive pickle", category: "Pickles", inStock: true, organic: true },
+    { id: 11, name: "Elephant Apple (Chalta) – 250 g", price: "₹60", image: "/images/products/chalta-pickle.jpg", description: "Chalta pickle", category: "Pickles", inStock: true, organic: true },
+    { id: 12, name: "Mixed – 250 g", price: "₹60", image: "/images/products/mixed-pickle.jpg", description: "Mixed pickle", category: "Pickles", inStock: true, organic: true },
+
+    // Jam
+    { id: 13, name: "Raw Mango – 250 g", price: "₹60", image: "/images/products/raw-mango-squash.jpg", description: "Raw mango jam", category: "Jam", inStock: true, organic: true },
+    { id: 14, name: "Mixed – 250 g", price: "₹60", image: "/images/products/raw-mango-squash.jpg", description: "Mixed fruit jam", category: "Jam", inStock: true, organic: true },
+
+    // Sauces
+    { id: 15, name: "Chili Sauce – 500 ml", price: "₹80", image: "/images/products/lime-cordial.jpg", description: "Spicy chili sauce", category: "Sauces", inStock: true, organic: true },
+    { id: 16, name: "Mango Kasundi – 500 ml", price: "₹80", image: "/images/products/chalta-pickle.jpg", description: "Mango mustard sauce", category: "Sauces", inStock: true, organic: true },
+
+    // Others
+    { id: 17, name: "Aam Sattva (Mango Bar) – 1 kg", price: "₹1000", image: "/images/products/mango-oil-pickle.jpg", description: "Traditional mango bars", category: "Others", inStock: true, organic: true },
+    { id: 18, name: "Turmeric Powder – 100 g", price: "₹40", image: "/images/products/jam-new.jpg", description: "Ground turmeric powder", category: "Others", inStock: true, organic: true },
+    { id: 19, name: "Buckwheat", price: "₹80/kg", image: "/images/products/sauces.jpg", description: "Whole buckwheat", category: "Others", inStock: true, organic: true },
+  ], []);
+
+  const categories = ["All", "Squash", "Pickles", "Jam", "Sauces", "Others"]
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+  const filteredProducts = useMemo(() => (
+    selectedCategory === "All"
+      ? products
+      : products.filter((p) => p.category === selectedCategory)
+  ), [selectedCategory, products])
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Leaf className="h-8 w-8 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">Sakria Farm and HomeStay</span>
-            </div>
-            <div className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-green-600">
-                Home
-              </Link>
-              <Link href="/products" className="text-gray-900 hover:text-green-600 font-medium">
-                Products
-              </Link>
-              <Link href="/accommodations" className="text-gray-700 hover:text-green-600">
-                Stay
-              </Link>
-              <Link href="/about" className="text-gray-700 hover:text-green-600">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-green-600">
-                Contact
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/cart">
-                <Button className="bg-green-600 hover:bg-green-700">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Cart ({cart.itemCount})
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* The <nav> section has been removed from here. */}
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
@@ -140,21 +81,20 @@ export default function ProductsPage() {
           {categories.map((category) => (
             <Button
               key={category}
-              variant={category === "All" ? "default" : "outline"}
-              className={
-                category === "All"
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-              }
+              variant={category === selectedCategory ? "default" : "outline"}
+              className={category === selectedCategory
+                ? "bg-green-600 hover:bg-green-700"
+                : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white"}
+              onClick={() => setSelectedCategory(category)}
             >
               {category}
             </Button>
           ))}
         </div>
 
-        {/* Products Grid */}
+        {/* Products Grid (filtered) */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="relative h-64">
                 <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
@@ -165,9 +105,7 @@ export default function ProductsPage() {
               </div>
               <CardContent className="p-6">
                 <div className="mb-2">
-                  <Badge variant="outline" className="text-xs">
-                    {product.category}
-                  </Badge>
+                  <Badge variant="outline" className="text-xs">{product.category}</Badge>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
                 <p className="text-gray-600 mb-4">{product.description}</p>
@@ -177,23 +115,11 @@ export default function ProductsPage() {
                     <div className="flex items-center space-x-2">
                       {isInCart(product.id) ? (
                         <div className="flex items-center space-x-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateQuantity(product.id, getItemQuantity(product.id) - 1)}
-                            className="h-8 w-8 p-0"
-                          >
+                          <Button size="sm" variant="outline" onClick={() => updateQuantity(product.id, getItemQuantity(product.id) - 1)} className="h-8 w-8 p-0">
                             <Minus className="h-4 w-4" />
                           </Button>
-                          <span className="text-sm font-medium w-8 text-center">
-                            {getItemQuantity(product.id)}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateQuantity(product.id, getItemQuantity(product.id) + 1)}
-                            className="h-8 w-8 p-0"
-                          >
+                          <span className="text-sm font-medium w-8 text-center">{getItemQuantity(product.id)}</span>
+                          <Button size="sm" variant="outline" onClick={() => updateQuantity(product.id, getItemQuantity(product.id) + 1)} className="h-8 w-8 p-0">
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
@@ -217,9 +143,7 @@ export default function ProductsPage() {
                       )}
                     </div>
                   ) : (
-                    <Button size="sm" className="bg-gray-400" disabled>
-                      Out of Stock
-                    </Button>
+                    <Button size="sm" className="bg-gray-400" disabled>Out of Stock</Button>
                   )}
                 </div>
               </CardContent>

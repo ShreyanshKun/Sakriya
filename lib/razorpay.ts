@@ -3,29 +3,29 @@ import Razorpay from 'razorpay';
 // Initialize Razorpay instance only on server side
 let razorpay: Razorpay | null = null;
 
-if (typeof window === 'undefined') {
+if (typeof window === 'undefined' && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
   // Server-side initialization
   razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
 }
 
 export { razorpay };
 
 // Create a new order
-export async function createOrder(params: any) {
+export async function createOrder(params: Record<string, unknown>) {
   if (!razorpay) {
     throw new Error('Razorpay is not initialized. This function should only be called on the server side.');
   }
   
   try {
     const order = await razorpay.orders.create({
-      amount: params.amount * 100, // Convert to paise
-      currency: params.currency || 'INR',
-      receipt: params.receipt || `order_${Date.now()}`,
-      notes: params.notes || {},
-      partial_payment: params.partial_payment || false,
+      amount: (params.amount as number) * 100, // Convert to paise
+      currency: (params.currency as string) || 'INR',
+      receipt: (params.receipt as string) || `order_${Date.now()}`,
+      notes: (params.notes as Record<string, string>) || {},
+      partial_payment: (params.partial_payment as boolean) || false,
     });
     return order;
   } catch (error) {
@@ -35,15 +35,16 @@ export async function createOrder(params: any) {
 }
 
 // Verify payment signature
-export function verifyPaymentSignature(params: any): boolean {
+export function verifyPaymentSignature(params: Record<string, unknown>): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const crypto = require('crypto');
-  const text = `${params.razorpay_order_id}|${params.razorpay_payment_id}`;
+  const text = `${params.razorpay_order_id as string}|${params.razorpay_payment_id as string}`;
   const signature = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
     .update(text)
     .digest('hex');
   
-  return signature === params.razorpay_signature;
+  return signature === (params.razorpay_signature as string);
 }
 
 // Get payment details
